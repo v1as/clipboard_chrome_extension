@@ -28,6 +28,9 @@ function getClipboardData() {
     return helperdiv.innerHTML;
 }
 
+var searchQueries = [];
+var searchUrlRegexp = /https:\/\/www\.google\.ru\/search\?q=([^&]+)&.+/i;
+
 chrome.extension.onRequest.addListener(
     function (request, sender, sendResponse) {
         if ('copy' === request.event) {
@@ -36,11 +39,19 @@ chrome.extension.onRequest.addListener(
         sendResponse({});
     });
 
-setInterval(function () {
-    var data = getClipboardData();
-    console.log(data);
-    // if (bgData !== data) {
-    //     bgData = data;
-    //     console.log(data);
-    // }
-}, 3000);
+chrome.tabs.onCreated.addListener(function (data) {
+    console.log('created' + new Date());
+});
+chrome.tabs.onUpdated.addListener(function (tabId, changeInfo) {
+    var url = changeInfo.url;
+    if (changeInfo.status === 'loading' && url) {
+        var res;
+        if (res = url.match(searchUrlRegexp)) {
+            var query = decodeURIComponent(res[1]).replace(/\+/g, ' ');
+            console.log(query);
+        }
+    }
+});
+// chrome.tabs.onReplaced.addListener(function (data) {
+//     console.log('replaced' + new Date());
+// });

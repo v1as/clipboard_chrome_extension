@@ -1,0 +1,33 @@
+{
+  "name": "v1as clipboard",
+  "version": "1",
+  "manifest_version": 2,
+  //   В content_scripts пишем, какой скрипт будет запускаться на всех страницах отдельно;
+  "content_scripts": [
+    {
+      "matches": [
+        "*://*/*"
+      ],
+      "js": [
+        "content.js"
+      ]
+    }
+  ],
+  //— В background пишем общий скрипт(фоновый скрипт), который запускается при запуске браузера;
+  "background": {
+    "scripts": [
+      "background.js"
+    ]
+  },
+  //— В permissions пишем адрес сайта, с которого будет браться информация.
+  "permissions": [
+    "tabs",
+    "clipboardRead"
+    //    "storage",
+    //    "http://losttime.su/*"
+  ],
+  "browser_action": {
+    "default_title": "v1as clipboard",
+    "default_popup": "popup.html"
+  }
+}

@@ -62,7 +62,7 @@ chrome.tabs.onRemoved.addListener(function (tabId: number) {
 chrome.tabs.onUpdated.addListener(function (tabId, changeInfo) {
     console.log('Updated tab ' + tabId);
     let url = changeInfo.url;
-    tabs[tabId].url = url;
+    // tabs[tabId].url = url;
     if (changeInfo.status === 'loading' && url) {
         let res;
         if (res = url.match(SEARCH_URL_REGEXP)) {

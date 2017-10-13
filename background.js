@@ -28,13 +28,12 @@ function getClipboardData() {
     return helperdiv.innerHTML;
 }
 
-var searchQueries = [];
 var searchUrlRegexp = /https:\/\/www\.google\.ru\/search\?q=([^&]+)&.+/i;
 
 chrome.extension.onRequest.addListener(
     function (request, sender, sendResponse) {
         if ('copy' === request.event) {
-            console.log(getClipboardData());
+            console.log('[' + sender.tab.openerTabId + '; ' + sender.tab.id + '] ' + getClipboardData());
         }
         sendResponse({});
     });
@@ -44,11 +43,12 @@ chrome.tabs.onCreated.addListener(function (data) {
 });
 chrome.tabs.onUpdated.addListener(function (tabId, changeInfo) {
     var url = changeInfo.url;
+
     if (changeInfo.status === 'loading' && url) {
         var res;
         if (res = url.match(searchUrlRegexp)) {
             var query = decodeURIComponent(res[1]).replace(/\+/g, ' ');
-            console.log(query);
+            console.log(tabId + ';' + query);
         }
     }
 });

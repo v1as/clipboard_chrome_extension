@@ -1,6 +1,10 @@
 import * as moment from "moment";
 import * as $ from "jquery";
 
+chrome.storage.sync.get('sessions', function (sessions) {
+    $('#sessions').val(JSON.stringify(sessions));
+});
+
 // // Saves options to chrome.storage.sync.
 // function save_options() {
 //   var color = $('#color').val();

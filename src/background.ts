@@ -1,21 +1,18 @@
-// chrome.runtime.onMessage.addListener(
-//   function(request, sender, sendResponse) {
-// var a = request.site; // данные о сайте
-// var b = request.time; // данные о проведенном времени
-// // тут делаем с этими данными что хотим.
-//   });
+import MessageSender = chrome.runtime.MessageSender;
+
+const SEARCH_URL_REGEXP = /https:\/\/www\.google\.ru\/search\?q=([^&]+)&.+/i;
 
 function getClipboardData() {
-    bg = chrome.extension.getBackgroundPage();        // get the background page
+    let bg = chrome.extension.getBackgroundPage();        // get the background page
     bg.document.body.innerHTML = "";                   // clear the background page
 
 // add a DIV, contentEditable=true, to accept the paste action
-    var helperdiv = bg.document.createElement("div");
+    let helperdiv = bg.document.createElement("div");
     document.body.appendChild(helperdiv);
-    helperdiv.contentEditable = true;
+    helperdiv.contentEditable = 'true';
 
 // focus the helper div's content
-    var range = document.createRange();
+    let range = document.createRange();
     range.selectNode(helperdiv);
     window.getSelection().removeAllRanges();
     window.getSelection().addRange(range);
@@ -28,10 +25,8 @@ function getClipboardData() {
     return helperdiv.innerHTML;
 }
 
-var searchUrlRegexp = /https:\/\/www\.google\.ru\/search\?q=([^&]+)&.+/i;
-
 chrome.extension.onRequest.addListener(
-    function (request, sender, sendResponse) {
+    function (request, sender: MessageSender, sendResponse) {
         if ('copy' === request.event) {
             console.log('[' + sender.tab.openerTabId + '; ' + sender.tab.id + '] ' + getClipboardData());
         }
@@ -41,17 +36,15 @@ chrome.extension.onRequest.addListener(
 chrome.tabs.onCreated.addListener(function (data) {
     console.log('created' + new Date());
 });
+
 chrome.tabs.onUpdated.addListener(function (tabId, changeInfo) {
     var url = changeInfo.url;
 
     if (changeInfo.status === 'loading' && url) {
         var res;
-        if (res = url.match(searchUrlRegexp)) {
+        if (res = url.match(SEARCH_URL_REGEXP)) {
             var query = decodeURIComponent(res[1]).replace(/\+/g, ' ');
             console.log(tabId + ';' + query);
         }
     }
 });
-// chrome.tabs.onReplaced.addListener(function (data) {
-//     console.log('replaced' + new Date());
-// });
